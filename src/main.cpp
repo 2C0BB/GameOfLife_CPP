@@ -1,8 +1,10 @@
 #include "raylib.h"
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
-#define MAP_COLUMNS 20
-#define MAP_ROWS 20
+#define MAP_COLUMNS 40
+#define MAP_ROWS 40
 
 #define DELAY 0.2
 
@@ -18,6 +20,10 @@ class Cell {
 
 		int is_alive() {
 			return state;
+		}
+
+		void clear_cell() {
+			state = 0;
 		}
 
 		void set_next_state(int neighbours) {
@@ -54,6 +60,29 @@ class Map {
 
 		Map(int _size) {
 			size = _size;			
+		}
+
+		void randomise_cells() {
+
+			clear_cells();
+
+			for (int r = 0; r < MAP_ROWS; r++) {
+				for (int c = 0; c < MAP_COLUMNS; c++) {
+
+					if (rand() % 5 == 0) {
+						swap_cell(r, c);
+					}
+
+				}
+			}
+		}
+
+		void clear_cells() {
+			for (int r = 0; r < MAP_ROWS; r++) {
+				for (int c = 0; c < MAP_COLUMNS; c++) {
+					cells[r][c].clear_cell();
+				}
+			}
 		}
 	
 		void update_cells() {
@@ -137,18 +166,22 @@ void draw_cursor(int r, int c, int size) {
 
 int main(void)
 {
+	srand((int)time(NULL));
+
     const int screenWidth = 800;
     const int screenHeight = 800;
 
 	int cell_size = screenWidth/MAP_COLUMNS;
 	Map map1(cell_size);
 
+	map1.randomise_cells();
 
-	map1.swap_cell(0, 2);
-	map1.swap_cell(1, 0);
-	map1.swap_cell(1, 2);
-	map1.swap_cell(2, 1);
-	map1.swap_cell(2, 2);
+	// GLIDER PATTERN
+	// map1.swap_cell(0, 2);
+	// map1.swap_cell(1, 0);
+	// map1.swap_cell(1, 2);
+	// map1.swap_cell(2, 1);
+	// map1.swap_cell(2, 2);
 
 	int state = 0; 
 	// running = 0; paused = 1; editor = 2;
@@ -197,6 +230,13 @@ int main(void)
 			}
 			if (IsKeyPressed(KEY_RIGHT)) {
 				cursor_c += 1;
+			}
+
+			if (IsKeyPressed(KEY_C)) {
+				map1.clear_cells();
+			}
+			if (IsKeyPressed(KEY_R)) {
+				map1.randomise_cells();
 			}
 
 			if (cursor_c < 0) {
